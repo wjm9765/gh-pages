@@ -1,0 +1,29 @@
+# macOS metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Local editor and cache files
+.cache/
+*.cache
+*.tmp
+*.temp
+*.log
+*.swp
+*.swo
+*~
+
+# Optional build or dependency output
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+
+# Private reference material
+reference/
+**/reference/
