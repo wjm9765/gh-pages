@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>새싹반NLP, 머신러닝 수학</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/simple.min.css" id="theme">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css" />
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS_HTML"></script>
+    <style>
+        :root {
+            --ink: #1f2937;
+            --muted: #657083;
+            --surface: #ffffff;
+            --soft: #f7f8fb;
+            --line: #d9e0ea;
+            --accent: #0f766e;
+            --accent-soft: #e3f4f1;
+            --blue: #2563eb;
+            --blue-soft: #eff6ff;
+            --red: #dc2626;
+            --amber: #b45309;
+            --amber-soft: #fff7ed;
+            --green: #15803d;
+            --green-soft: #ecfdf5;
+        }
+
+        .reveal {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 30px;
+            color: var(--ink);
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3,
+        .reveal h4 {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            text-transform: none;
+            font-weight: 780;
+            letter-spacing: 0;
+            color: var(--ink);
+            margin-bottom: 24px;
+        }
+
+        .reveal h1 {
+            font-size: 1.95em;
+            line-height: 1.18;
+        }
+
+        .reveal h2 {
+            font-size: 1.48em;
+            line-height: 1.22;
+        }
+
+        .reveal h3 {
+            font-size: 1.02em;
+            margin-bottom: 12px;
+        }
+
+        .reveal p,
+        .reveal li {
+            text-align: left;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .reveal ul,
+        .reveal ol {
+            display: block;
+            width: 82%;
+            margin: 0 auto;
+        }
+
+        .reveal li {
+            font-size: 0.86em;
+        }
+
+        .reveal strong {
+            font-weight: 760;
+        }
+
+        .eyebrow {
+            text-align: center !important;
+            color: var(--accent);
+            font-size: 0.72em;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            text-align: center !important;
+            color: var(--muted);
+            font-size: 0.92em;
+            max-width: 820px;
+            margin: 18px auto 0;
+        }
+
+        .center {
+            text-align: center !important;
+        }
+
+        .highlight {
+            color: var(--red);
+            font-weight: 780;
+        }
+
+        .ok {
+            color: var(--green);
+            font-weight: 760;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .box {
+            width: 82%;
+            margin: 20px auto;
+            padding: 18px 22px;
+            border-radius: 8px;
+            background: var(--soft);
+            border-left: 5px solid var(--accent);
+            text-align: left;
+            font-size: 0.82em;
+        }
+
+        .note {
+            width: 82%;
+            margin: 22px auto 0;
+            padding: 18px 22px;
+            border-radius: 8px;
+            background: var(--accent-soft);
+            color: #134e4a;
+            text-align: left;
+            font-size: 0.82em;
+        }
+
+        .formula {
+            width: fit-content;
+            max-width: 82%;
+            margin: 16px auto;
+            padding: 12px 18px;
+            border-radius: 8px;
+            background: #ffffff;
+            border: 2px solid var(--line);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+            font-size: 0.74em;
+            color: #111827;
+            text-align: center;
+        }
+
+        .flow {
+            width: 86%;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin: 24px auto 0;
+        }
+
+        .step {
+            min-height: 112px;
+            display: grid;
+            align-content: center;
+            padding: 16px 12px;
+            border-radius: 8px;
+            background: #ffffff;
+            border: 1px solid var(--line);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
+            text-align: center;
+            font-size: 0.68em;
+            line-height: 1.35;
+            font-weight: 680;
+        }
+
+        .step strong {
+            display: block;
+            color: var(--accent);
+            margin-bottom: 7px;
+        }
+
+        .two-col {
+            width: 86%;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 16px;
+            margin: 0 auto;
+            align-items: stretch;
+        }
+
+        .three-col {
+            width: 88%;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin: 0 auto;
+            align-items: stretch;
+        }
+
+        .card {
+            padding: 17px 18px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
+            text-align: left;
+        }
+
+        .card h3 {
+            color: var(--accent);
+            font-size: 0.82em;
+            margin-bottom: 10px;
+        }
+
+        .card p,
+        .card li {
+            font-size: 0.68em;
+            line-height: 1.48;
+            margin-bottom: 8px;
+        }
+
+        .part-grid {
+            width: 88%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin: 0 auto;
+        }
+
+        .part-card {
+            min-height: 170px;
+            padding: 16px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: #ffffff;
+            text-align: left;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
+        }
+
+        .part-card h3 {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 6px;
+            background: var(--blue-soft);
+            color: #1d4ed8;
+            font-size: 0.66em;
+            margin-bottom: 10px;
+        }
+
+        .part-card p {
+            font-size: 0.68em;
+            line-height: 1.48;
+            margin: 0;
+        }
+
+        .part-card:nth-child(2) h3 {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .part-card:nth-child(3) h3 {
+            background: var(--amber-soft);
+            color: var(--amber);
+        }
+
+        .part-card:nth-child(4) h3 {
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .mini-table {
+            width: 86%;
+            margin: 18px auto;
+            border-collapse: collapse;
+            font-size: 0.68em;
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .mini-table th,
+        .mini-table td {
+            padding: 11px 13px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .mini-table th {
+            background: var(--soft);
+            color: var(--ink);
+            font-weight: 760;
+        }
+
+        .mini-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .checklist {
+            width: 86%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px 18px;
+            margin: 0 auto;
+            text-align: left;
+            font-size: 0.7em;
+        }
+
+        .checklist div {
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #ffffff;
+            border: 1px solid var(--line);
+        }
+
+        .sequence {
+            width: 82%;
+            margin: 0 auto;
+            counter-reset: study-step;
+            display: grid;
+            gap: 10px;
+        }
+
+        .sequence div {
+            counter-increment: study-step;
+            display: grid;
+            grid-template-columns: 42px minmax(0, 1fr);
+            gap: 12px;
+            align-items: center;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #ffffff;
+            text-align: left;
+            font-size: 0.7em;
+        }
+
+        .sequence div::before {
+            content: counter(study-step);
+            display: grid;
+            place-items: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: var(--accent);
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+        .code-line {
+            display: block;
+            width: 82%;
+            margin: 14px auto;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: #111827;
+            color: #f8fafc;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+            font-size: 0.58em;
+            text-align: left;
+            white-space: normal;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 760px) {
+            .reveal {
+                font-size: 24px;
+            }
+
+            .flow,
+            .two-col,
+            .three-col,
+            .part-grid,
+            .checklist {
+                grid-template-columns: 1fr;
+            }
+
+            .step {
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <section>
+                <h1>새싹반NLP,<br>머신러닝 수학</h1>
+            </section>
+
+            <section>
+                <h2>오늘 볼 큰 그림</h2>
+                <div class="flow">
+                    <div class="step"><strong>1</strong>텍스트를 숫자로 바꾸기</div>
+                    <div class="step"><strong>2</strong>문서-단어 행렬 만들기</div>
+                    <div class="step"><strong>3</strong>분류와 유사도 계산하기</div>
+                    <div class="step"><strong>4</strong>핵심 수학만 연결하기</div>
+                </div>
+                <p class="note">이번 자료는 현대 생성 모델이 아니라, <strong>머신러닝 기반 텍스트 분석</strong>을 이해하는 데 필요한 흐름만 다룹니다.</p>
+            </section>
+
+            <section>
+                <h2>텍스트 분석 이해: NLP란?</h2>
+                <div class="part-grid">
+                    <div class="part-card">
+                        <h3>핵심 개념</h3>
+                        <p>NLP는 사람이 쓰는 문장을 컴퓨터가 계산 가능한 형태로 바꾸고, 분류/검색/생성 같은 작업을 수행하는 분야입니다.</p>
+                    </div>
+                    <div class="part-card">
+                        <h3>왜 중요한가</h3>
+                        <p>리뷰 감성 분석, 스팸 탐지, 뉴스 분류, 문서 검색, 유사 문서 추천이 모두 텍스트 분석의 대표 문제입니다.</p>
+                    </div>
+                    <div class="part-card">
+                        <h3>학습 포인트</h3>
+                        <p>텍스트 자체를 바로 모델에 넣을 수 없기 때문에, <strong>토큰 -> 벡터 -> 모델 -> 평가</strong> 흐름을 먼저 잡습니다.</p>
+                    </div>
+                    <div class="part-card">
+                        <h3>간단한 예시</h3>
+                        <p>"배송이 빠르고 좋아요"라는 문장을 긍정 리뷰로 분류하려면 먼저 단어 조각들을 숫자로 바꿔야 합니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>머신러닝 NLP 파이프라인</h2>
+                <div class="flow">
+                    <div class="step"><strong>Text</strong>문장과 라벨 수집</div>
+                    <div class="step"><strong>Clean</strong>정제와 토큰화</div>
+                    <div class="step"><strong>Vectorize</strong>BoW / TF-IDF</div>
+                    <div class="step"><strong>Train</strong>분류기 학습과 평가</div>
+                </div>
+                <p class="note">핵심은 문장을 숫자 벡터로 바꾼 뒤, 기존 머신러닝 모델이 처리할 수 있는 표 형태 데이터로 만드는 것입니다.</p>
+            </section>
+
+            <section>
+                <h2>대표 텍스트 표현 방법</h2>
+                <table class="mini-table">
+                    <thead>
+                        <tr>
+                            <th>방식</th>
+                            <th>대표 표현</th>
+                            <th>장점</th>
+                            <th>한계</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>BoW / TF-IDF</td>
+                            <td>단어 출현 횟수, 중요도</td>
+                            <td>간단하고 빠름</td>
+                            <td>문맥과 단어 순서를 많이 잃음</td>
+                        </tr>
+                        <tr>
+                            <td>Word Embedding</td>
+                            <td>단어를 dense vector로 표현</td>
+                            <td>비슷한 단어가 가까워짐</td>
+                            <td>기본 머신러닝 수업에서는 BoW/TF-IDF 뒤에 학습</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>텍스트 정제와 토큰화</h2>
+                <div class="box">
+                    원문: "배송이 너무 빠르고, 품질도 좋아요!!!"<br>
+                    정제: "배송 빠르 품질 좋"<br>
+                    토큰: ["배송", "빠르", "품질", "좋"]
+                </div>
+                <ul>
+                    <li>정제는 불필요한 기호, 중복 표현, 분석에 방해되는 요소를 줄이는 과정입니다.</li>
+                    <li>토큰화는 문장을 모델이 셀 수 있는 단위로 나누는 과정입니다.</li>
+                    <li>한국어는 조사와 어미가 붙기 때문에 형태소 분석이 도움이 될 수 있습니다.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>BoW: 단어를 세는 방식</h2>
+                <div class="part-grid">
+                    <div class="part-card">
+                        <h3>핵심 개념</h3>
+                        <p>Bag of Words는 문서에 어떤 단어가 몇 번 나왔는지 세어 문서를 벡터로 표현합니다.</p>
+                    </div>
+                    <div class="part-card">
+                        <h3>왜 중요한가</h3>
+                        <p>가장 단순하지만 텍스트 분류의 기본 흐름을 이해하기 좋습니다.</p>
+                    </div>
+                    <div class="part-card">
+                        <h3>학습 포인트</h3>
+                        <p>단어 순서는 거의 잃지만, 단어 출현 패턴을 표 형태로 만들 수 있습니다.</p>
+                    </div>
+                    <div class="part-card">
+                        <h3>간단한 예시</h3>
+                        <p>"영화 재미있다"와 "영화 재미있다 재미있다"는 "재미있다" 횟수가 다르게 기록됩니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>BoW 예시: 문서-단어 행렬</h2>
+                <table class="mini-table">
+                    <thead>
+                        <tr>
+                            <th>문서</th>
+                            <th>영화</th>
+                            <th>재미</th>
+                            <th>별로</th>
+                            <th>추천</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>"영화 재미 추천"</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>"영화 별로"</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="note">이 행렬의 행은 문서, 열은 단어입니다. 이 형태가 되면 로지스틱 회귀, 나이브 베이즈, SVM 같은 모델에 넣을 수 있습니다.</p>
+            </section>
+
+            <section>
+                <h2>TF-IDF: 흔한 단어는 낮게</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h3>핵심 직관</h3>
+                        <p>문서 안에서 자주 나오지만, 모든 문서에 흔하지 않은 단어를 더 중요하게 봅니다.</p>
+                        <p>"영화"처럼 어디에나 나오는 단어보다 "감동", "환불", "고장" 같은 단어가 더 구분력이 있을 수 있습니다.</p>
+                    </div>
+                    <div class="card">
+                        <h3>모델 연결</h3>
+                        <p>TF-IDF 벡터는 텍스트 분류와 문서 유사도 계산에서 자주 쓰이는 기본 입력입니다.</p>
+                        <p>CountVectorizer보다 단어 중요도를 더 세밀하게 반영할 수 있습니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>문서 유사도: Cosine Similarity</h2>
+                <div class="box">
+                    A: "배송 빠르 품질 좋"<br>
+                    B: "배송 빠르 포장 좋"<br>
+                    C: "환불 불만 고장"
+                </div>
+                <ul>
+                    <li>A와 B는 겹치는 단어가 많아 벡터 방향이 비슷합니다.</li>
+                    <li>A와 C는 사용하는 단어가 달라 벡터 방향이 멀어질 가능성이 큽니다.</li>
+                    <li>코사인 유사도는 문서 벡터의 <strong>크기보다 방향</strong>이 얼마나 비슷한지 봅니다.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>텍스트 분류 예시</h2>
+                <div class="part-grid">
+                    <div class="part-card">
+                        <h3>핵심 개념</h3>
+                        <p>텍스트 분류는 문장을 벡터로 바꾼 뒤 정해진 라벨 중 하나를 예측하는 문제입니다.</p>
+                    </div>
+                    <div class="part-card">
+                        <h3>왜 중요한가</h3>
+                        <p>감성 분석, 스팸 탐지, 뉴스 카테고리 분류가 모두 같은 흐름으로 풀립니다.</p>
+                    </div>
+                    <div class="part-card">
+                        <h3>학습 포인트</h3>
+                        <p>입력은 TF-IDF 행렬, 출력은 라벨입니다. 모델은 어떤 단어가 어떤 라벨과 가까운지 학습합니다.</p>
+                    </div>
+                    <div class="part-card">
+                        <h3>간단한 예시</h3>
+                        <p>"재구매하고 싶어요"는 긍정, "다시는 안 살래요"는 부정으로 분류합니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>평가 지표도 함께 봐야 함</h2>
+                <table class="mini-table">
+                    <thead>
+                        <tr>
+                            <th>지표</th>
+                            <th>의미</th>
+                            <th>NLP 예시</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Accuracy</td><td>전체 중 맞힌 비율</td><td>일반적인 뉴스 분류</td></tr>
+                        <tr><td>Precision</td><td>양성이라고 한 것 중 진짜 양성 비율</td><td>스팸이라고 차단한 메일의 신뢰도</td></tr>
+                        <tr><td>Recall</td><td>실제 양성 중 찾아낸 비율</td><td>악성 댓글을 놓치지 않는 능력</td></tr>
+                        <tr><td>F1-score</td><td>Precision과 Recall의 균형</td><td>클래스 불균형이 있을 때 유용</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>왜 수학이 필요한가?</h2>
+                <div class="two-col">
+                    <div class="card">
+                        <h3>Matrix Decomposition</h3>
+                        <p>문서-단어 행렬처럼 큰 행렬에서 중요한 축과 숨은 구조를 찾게 해줍니다.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Vector Calculus</h3>
+                        <p>분류 모델이 틀렸을 때 가중치를 어떤 방향으로 고칠지 이해하게 해줍니다.</p>
+                    </div>
+                </div>
+                <p class="note">이번 자료에서는 전체 수학 목록 중 <strong>Eigen, SVD, Gradient</strong>만 우선순위로 봅니다.</p>
+            </section>
+
+            <section>
+                <h2>MML CH4: 정말 중요한 것만</h2>
+                <table class="mini-table">
+                    <thead>
+                        <tr>
+                            <th>우선순위</th>
+                            <th>개념</th>
+                            <th>NLP 연결</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>높음</td><td>Eigenvalues / Eigenvectors</td><td>PCA, 중요한 데이터 방향, 분산이 큰 축</td></tr>
+                        <tr><td>높음</td><td>Singular Value Decomposition</td><td>문서-단어 행렬의 숨은 주제, 차원 축소</td></tr>
+                        <tr><td>높음</td><td>Matrix Approximation</td><td>큰 행렬에서 중요한 정보만 남기기</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>Eigenvectors: 중요한 방향</h2>
+                <div class="formula">A v = lambda v</div>
+                <div class="part-grid">
+                    <div class="part-card">
+                        <h3>핵심 개념</h3>
+                        <p>행렬을 곱해도 방향은 그대로이고 길이만 바뀌는 특별한 방향이 eigenvector입니다.</p>
+                    </div>
+                    <div class="part-card">
+                        <h3>왜 중요한가</h3>
+                        <p>데이터가 가장 많이 퍼져 있는 방향, 즉 PCA의 핵심 아이디어와 연결됩니다.</p>
+                    </div>
+                    <div class="part-card">
+                        <h3>학습 포인트</h3>
+                        <p>eigenvalue는 그 방향이 얼마나 강한지 알려주는 배율입니다.</p>
+                    </div>
+                    <div class="part-card">
+                        <h3>간단한 예시</h3>
+                        <p>리뷰 데이터에서 긍정/부정 표현을 잘 가르는 방향이 있다면, 그 방향이 중요한 축입니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>SVD와 Matrix Approximation</h2>
+                <div class="formula">A = U Sigma V^T</div>
+                <div class="two-col">
+                    <div class="card">
+                        <h3>SVD</h3>
+                        <p>어떤 행렬이든 중요한 방향과 그 크기로 나누어 볼 수 있는 분해입니다.</p>
+                        <p>문서-단어 행렬에서 숨은 주제 구조를 찾는 데 연결됩니다.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Approximation</h3>
+                        <p>중요한 성분 몇 개만 남겨도 원래 행렬을 어느 정도 설명할 수 있습니다.</p>
+                        <p>차원 축소, 노이즈 제거, 추천 시스템의 잠재 요인과 연결됩니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>MML CH5: 정말 중요한 것만</h2>
+                <table class="mini-table">
+                    <thead>
+                        <tr>
+                            <th>우선순위</th>
+                            <th>개념</th>
+                            <th>NLP 연결</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>높음</td><td>Partial Differentiation and Gradients</td><td>모델 가중치를 어느 방향으로 바꿀지 계산</td></tr>
+                        <tr><td>높음</td><td>Gradients of Matrices</td><td>TF-IDF 행렬과 가중치 행렬의 shape 이해</td></tr>
+                        <tr><td>중간</td><td>Useful Identities</td><td>공식보다 shape과 계산 흐름 중심으로 확인</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>Gradient: 가중치를 고치는 방향</h2>
+                <div class="formula">w_new = w_old - learning_rate * gradient</div>
+                <div class="box">
+                    감성 분석 모델이 "별로다"가 들어간 리뷰를 긍정으로 잘못 예측했다면, 손실이 커지고 관련 가중치를 부정 방향으로 조정합니다.
+                </div>
+                <ul>
+                    <li>Gradient는 손실이 가장 빠르게 증가하는 방향입니다.</li>
+                    <li>학습은 그 반대 방향으로 이동해 손실을 줄입니다.</li>
+                    <li>텍스트 분류에서도 모델은 단어 특성과 라벨 사이의 가중치를 이런 방식으로 조정합니다.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>자율 학습 체크리스트</h2>
+                <div class="checklist">
+                    <div>[ ] 텍스트를 숫자 벡터로 바꿔야 하는 이유를 설명할 수 있다.</div>
+                    <div>[ ] 정제, 토큰화, 벡터화의 차이를 설명할 수 있다.</div>
+                    <div>[ ] BoW와 TF-IDF의 차이를 설명할 수 있다.</div>
+                    <div>[ ] 문서-단어 행렬이 무엇인지 설명할 수 있다.</div>
+                    <div>[ ] 코사인 유사도가 문서 유사도에 쓰이는 이유를 설명할 수 있다.</div>
+                    <div>[ ] 텍스트 분류의 전체 학습 흐름을 설명할 수 있다.</div>
+                    <div>[ ] eigenvector와 SVD가 중요한 축/차원 축소와 연결됨을 설명할 수 있다.</div>
+                    <div>[ ] gradient가 가중치 수정 방향이라는 점을 설명할 수 있다.</div>
+                </div>
+            </section>
+
+            <section>
+                <h2>마무리</h2>
+                <div class="box">
+                    머신러닝 NLP의 핵심은 "문장을 정제하고, 단어 기반 벡터로 바꾸고, 분류/유사도 문제로 푼다"는 흐름입니다.
+                </div>
+                <ul>
+                    <li>Matrix Decomposition은 문서-단어 행렬에서 중요한 축과 숨은 구조를 보게 해줍니다.</li>
+                    <li>Vector Calculus는 분류 모델이 손실을 줄이며 가중치를 고치는 방식을 이해하게 해줍니다.</li>
+                    <li>지금은 BoW, TF-IDF, 유사도, 분류 평가를 먼저 정확히 잡는 것이 중요합니다.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>다음 주차 예고: Backpropagation</h2>
+                <div class="box">
+                    다음 주차에서는 모델이 손실을 줄이기 위해 가중치를 어떻게 거꾸로 따라가며 수정하는지, Backpropagation을 조금 더 공부해보겠습니다.
+                </div>
+                <ul>
+                    <li>오늘은 gradient가 "가중치를 고치는 방향"이라는 직관까지만 잡습니다.</li>
+                    <li>다음에는 여러 층의 모델에서 gradient가 어떻게 전달되는지 살펴봅니다.</li>
+                    <li>머신러닝에서 딥러닝으로 넘어갈 때 꼭 필요한 연결 개념입니다.</li>
+                </ul>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: true,
+            disableLayout: false,
+            transition: 'slide'
+        });
+    </script>
+</body>
+</html>
