@@ -9,6 +9,15 @@ Static pages and presentation materials for sharing study notes, seminar slides,
 - [Audio Safety in Large Audio-Language Models](https://wjm9765.github.io/gh-pages/AudioSafety/Audio%20Safety%20in%20Large%20Audio-Language%20Models.pdf)
 - [Saessak 4.5 Feedback](https://wjm9765.github.io/gh-pages/saessak/ch5-feedback/)
 - [Saessak 4.11 Feedback](https://wjm9765.github.io/gh-pages/saessak/ch6-feedback/)
+- [Saessak 5.2 Feedback](https://wjm9765.github.io/gh-pages/saessak/ch8-feedback/)
+
+## Deployment
+
+This is a project Pages site, so the public URL includes the repository name:
+
+- `https://wjm9765.github.io/gh-pages/`
+
+The root URL `https://wjm9765.github.io/` is separate and will not show this repository unless a user Pages repository named `wjm9765.github.io` is configured.
 
 ## Notes
 
