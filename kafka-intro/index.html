@@ -782,6 +782,306 @@
       box-shadow: var(--shadow);
     }
 
+    .simulator {
+      position: relative;
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 12px;
+      max-width: 1140px;
+      min-height: 480px;
+      margin: 0 auto;
+    }
+
+    .sim-slide h2 {
+      max-width: 1140px;
+      margin-bottom: 18px;
+      font-size: 1.16em;
+    }
+
+    .sim-panel {
+      position: relative;
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #050505;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .sim-panel h3 {
+      margin: 0 0 12px;
+      color: var(--green);
+      font-size: 0.5em;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .sim-code {
+      min-height: 386px;
+      margin: 0;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 8px;
+      background: #000000;
+      color: #f8fafc;
+      font-family: var(--mono);
+      font-size: 0.32em;
+      line-height: 1.45;
+      overflow-y: auto;
+      overflow-x: hidden;
+      white-space: pre-wrap;
+    }
+
+    .sim-code code {
+      white-space: normal !important;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+
+    .sim-code span {
+      display: block;
+      padding: 1px 6px;
+      border-radius: 5px;
+      color: #e5e7eb;
+    }
+
+    .sim-code span.active {
+      background: rgba(94, 234, 212, 0.18);
+      color: #ffffff;
+      outline: 1px solid rgba(94, 234, 212, 0.42);
+    }
+
+    .sim-stage {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 10px;
+      min-width: 0;
+      min-height: 480px;
+      padding: 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #020202;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .sim-status {
+      min-height: 48px;
+      padding: 10px 12px;
+      border: 1px solid rgba(94, 234, 212, 0.5);
+      border-radius: 8px;
+      background: rgba(94, 234, 212, 0.1);
+      color: #ffffff;
+      font-size: 0.44em;
+      font-weight: 720;
+      line-height: 1.35;
+    }
+
+    .sim-lane {
+      position: relative;
+      display: grid;
+      grid-template-columns: 0.9fr 1.15fr 0.95fr;
+      gap: 8px;
+      align-items: center;
+      min-width: 0;
+      min-height: 300px;
+    }
+
+    .sim-node {
+      min-width: 0;
+      min-height: 116px;
+      padding: 12px 10px;
+      border: 2px solid rgba(255, 255, 255, 0.56);
+      border-radius: 10px;
+      background: #080808;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .sim-node.producer {
+      border-color: var(--blue);
+      background: #020d14;
+    }
+
+    .sim-node.topic {
+      min-height: 244px;
+      border-color: var(--green);
+      background: #02110f;
+    }
+
+    .sim-node.consumer {
+      border-color: var(--orange);
+      background: #120f02;
+    }
+
+    .sim-node strong {
+      display: block;
+      margin-bottom: 7px;
+      color: #ffffff;
+      font-size: 0.48em;
+      overflow-wrap: anywhere;
+    }
+
+    .sim-node small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.33em;
+      line-height: 1.35;
+    }
+
+    .topic-log {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .topic-slot {
+      min-height: 35px;
+      padding: 7px;
+      border: 1px dashed rgba(255, 255, 255, 0.38);
+      border-radius: 7px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.31em;
+      text-align: left;
+    }
+
+    .topic-slot.filled {
+      border-style: solid;
+      border-color: rgba(94, 234, 212, 0.72);
+      background: rgba(94, 234, 212, 0.12);
+      color: #ffffff;
+    }
+
+    .consumer-box {
+      min-height: 62px;
+      margin-top: 14px;
+      padding: 8px;
+      border: 1px dashed rgba(255, 255, 255, 0.38);
+      border-radius: 7px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.3em;
+      text-align: left;
+      overflow-wrap: anywhere;
+    }
+
+    .consumer-box.filled {
+      border-style: solid;
+      border-color: rgba(253, 224, 71, 0.76);
+      background: rgba(253, 224, 71, 0.12);
+      color: #ffffff;
+    }
+
+    .moving-event {
+      position: absolute;
+      top: 46%;
+      left: 11%;
+      z-index: 5;
+      width: 92px;
+      min-height: 42px;
+      padding: 7px 8px;
+      border: 2px solid #ffffff;
+      border-radius: 9px;
+      background: #000000;
+      color: #ffffff;
+      font-family: var(--mono);
+      font-size: 0.3em;
+      font-weight: 800;
+      line-height: 1.2;
+      text-align: center;
+      opacity: 0;
+      transform: translate(0, -50%);
+      transition: left 550ms ease, top 550ms ease, opacity 180ms ease;
+      box-shadow: 0 0 24px rgba(94, 234, 212, 0.32);
+    }
+
+    .moving-event.show {
+      opacity: 1;
+    }
+
+    .moving-event.to-topic {
+      left: 44%;
+    }
+
+    .moving-event.to-consumer {
+      left: 78%;
+    }
+
+    .sim-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sim-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .sim-button {
+      min-height: 34px;
+      padding: 7px 12px;
+      border: 1px solid rgba(94, 234, 212, 0.72);
+      border-radius: 8px;
+      background: rgba(94, 234, 212, 0.14);
+      color: #ffffff;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.4em;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .sim-button.secondary {
+      border-color: rgba(255, 255, 255, 0.42);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .sim-button:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+    }
+
+    .offset-view {
+      color: var(--text-soft);
+      font-family: var(--mono);
+      font-size: 0.36em;
+      font-weight: 780;
+    }
+
+    .sim-log {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 0 !important;
+      list-style: none !important;
+    }
+
+    .sim-log li {
+      padding: 9px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-size: 0.36em;
+      line-height: 1.34;
+    }
+
+    .sim-log li::marker {
+      content: "";
+    }
+
+    .sim-log li.active {
+      border-color: rgba(94, 234, 212, 0.68);
+      background: rgba(94, 234, 212, 0.1);
+      color: #ffffff;
+    }
+
     .reveal .controls {
       color: var(--green);
     }
@@ -802,7 +1102,9 @@
       .full-flow,
       .sequence,
       .code-layout,
-      .compare {
+      .compare,
+      .simulator,
+      .sim-lane {
         grid-template-columns: 1fr;
       }
 
@@ -1298,12 +1600,59 @@ public class NotificationConsumer {
         </div>
       </section>
 
-      <section>
-        <div class="final">
-          <p class="eyebrow">Takeaway</p>
-          <h2>Kafka는 “서비스 사이의 실시간 이벤트 장부”입니다</h2>
-          <p class="key-line">Producer는 사건을 기록하고, Kafka는 순서 있는 로그로 보관하고, Consumer Group은 각자 목적에 맞게 같은 기록을 읽습니다.</p>
-          <p>처음에는 전체 구조, 메시지 모양, Producer/Consumer 코드, Consumer Group 개념만 정확히 잡으면 됩니다.</p>
+      <section class="sim-slide">
+        <p class="section-label">Interactive Demo</p>
+        <h2>실행하면 이벤트가 Topic에 쌓이고 Consumer가 가져가 처리합니다</h2>
+        <div class="simulator" id="kafka-simulator">
+          <div class="sim-panel">
+            <h3>Producer Code</h3>
+            <pre class="sim-code" aria-label="Kafka producer example code"><code><span data-code-step="1">Order order = repo.save(req);</span>
+<span data-code-step="2">var event = OrderCreatedEvent.of(order);</span>
+<span data-code-step="3">kafka.send(</span>
+<span data-code-step="3">  "order.created",</span>
+<span data-code-step="3">  order.id(),</span>
+<span data-code-step="3">  event</span>
+<span data-code-step="3">);</span>
+<span data-code-step="5">@KafkaListener("order.created")</span>
+<span data-code-step="5">void handle(OrderCreatedEvent e) {</span>
+<span data-code-step="6">  notify.send(e.userId());</span>
+<span data-code-step="6">  commitOffset(e);</span>
+<span data-code-step="6">}</span></code></pre>
+          </div>
+
+          <div class="sim-stage">
+            <div class="sim-status" id="sim-status">Run 버튼을 누르면 Producer 코드부터 실행됩니다.</div>
+            <div class="sim-lane">
+              <div class="sim-node producer">
+                <strong>Producer</strong>
+                <small>Order Service<br>주문 저장 후 이벤트 발행</small>
+              </div>
+              <div class="sim-node topic">
+                <strong>Topic: order.created</strong>
+                <small>Partition 1 · append-only log</small>
+                <div class="topic-log">
+                  <div class="topic-slot" id="topic-slot-0">offset 0 · empty</div>
+                  <div class="topic-slot" id="topic-slot-1">offset 1 · empty</div>
+                  <div class="topic-slot" id="topic-slot-2">offset 2 · empty</div>
+                </div>
+              </div>
+              <div class="sim-node consumer">
+                <strong>Consumer</strong>
+                <small>notification-service<br>poll → process → commit</small>
+                <div class="consumer-box" id="consumer-box">waiting for poll()</div>
+              </div>
+              <div class="moving-event" id="moving-event">evt-001<br>ORD-10043</div>
+            </div>
+            <div class="sim-controls">
+              <div class="sim-buttons">
+                <button class="sim-button" id="sim-run" type="button">Run</button>
+                <button class="sim-button secondary" id="sim-next" type="button">Step</button>
+                <button class="sim-button secondary" id="sim-reset" type="button">Reset</button>
+              </div>
+              <div class="offset-view" id="offset-view">consumer offset: 0</div>
+            </div>
+          </div>
+
         </div>
       </section>
     </div>
@@ -1318,6 +1667,123 @@ public class NotificationConsumer {
       center: true,
       transition: "slide"
     });
+
+    const simulator = document.querySelector("#kafka-simulator");
+
+    if (simulator) {
+      const status = simulator.querySelector("#sim-status");
+      const event = simulator.querySelector("#moving-event");
+      const topicSlot = simulator.querySelector("#topic-slot-0");
+      const topicSlot1 = simulator.querySelector("#topic-slot-1");
+      const topicSlot2 = simulator.querySelector("#topic-slot-2");
+      const consumerBox = simulator.querySelector("#consumer-box");
+      const offsetView = simulator.querySelector("#offset-view");
+      const codeLines = simulator.querySelectorAll("[data-code-step]");
+      const logLines = simulator.querySelectorAll("[data-log-step]");
+      const runButton = simulator.querySelector("#sim-run");
+      const nextButton = simulator.querySelector("#sim-next");
+      const resetButton = simulator.querySelector("#sim-reset");
+      let step = 0;
+      let timer = null;
+
+      const messages = [
+        "Run 버튼을 누르면 Producer 코드부터 실행됩니다.",
+        "1. Order Service가 주문을 DB에 저장합니다.",
+        "2. OrderCreatedEvent 객체를 생성합니다.",
+        "3. kafkaTemplate.send()가 이벤트를 Topic으로 보냅니다.",
+        "4. Kafka가 order.created / partition-1 / offset-0에 append합니다.",
+        "5. notification-service Consumer가 poll()로 이벤트를 가져옵니다.",
+        "6. Consumer가 알림을 보내고 offset을 1로 commit합니다."
+      ];
+
+      function setActiveStep(nextStep) {
+        step = nextStep;
+        status.textContent = messages[step];
+
+        codeLines.forEach((line) => {
+          line.classList.toggle("active", Number(line.dataset.codeStep) === step);
+        });
+
+        logLines.forEach((line) => {
+          line.classList.toggle("active", Number(line.dataset.logStep) === step);
+        });
+
+        event.className = "moving-event";
+        topicSlot.className = "topic-slot";
+        topicSlot1.className = "topic-slot";
+        topicSlot2.className = "topic-slot";
+        consumerBox.className = "consumer-box";
+        topicSlot.textContent = "offset 0 · empty";
+        topicSlot1.textContent = "offset 1 · empty";
+        topicSlot2.textContent = "offset 2 · empty";
+        consumerBox.textContent = "waiting for poll()";
+        offsetView.textContent = "consumer offset: 0";
+
+        if (step >= 2) {
+          event.classList.add("show");
+        }
+
+        if (step >= 3) {
+          event.classList.add("to-topic");
+        }
+
+        if (step >= 4) {
+          topicSlot.classList.add("filled");
+          topicSlot.textContent = "offset 0 · evt-001 · ORD-10043";
+        }
+
+        if (step >= 5) {
+          event.classList.add("to-consumer");
+          consumerBox.classList.add("filled");
+          consumerBox.textContent = "polled evt-001 from offset 0";
+        }
+
+        if (step >= 6) {
+          offsetView.textContent = "consumer offset: 1 committed";
+          consumerBox.textContent = "processed evt-001 → send notification";
+        }
+      }
+
+      function nextStep() {
+        setActiveStep(step >= 6 ? 0 : step + 1);
+      }
+
+      function runDemo() {
+        clearInterval(timer);
+        setActiveStep(0);
+        timer = setInterval(() => {
+          if (step >= 6) {
+            clearInterval(timer);
+            timer = null;
+            return;
+          }
+
+          nextStep();
+        }, 950);
+      }
+
+      runButton.addEventListener("click", runDemo);
+      nextButton.addEventListener("click", () => {
+        clearInterval(timer);
+        timer = null;
+        nextStep();
+      });
+      resetButton.addEventListener("click", () => {
+        clearInterval(timer);
+        timer = null;
+        setActiveStep(0);
+      });
+
+      Reveal.on("slidechanged", (eventData) => {
+        if (!eventData.currentSlide.querySelector("#kafka-simulator")) {
+          clearInterval(timer);
+          timer = null;
+          setActiveStep(0);
+        }
+      });
+
+      setActiveStep(0);
+    }
   </script>
 </body>
 </html>
