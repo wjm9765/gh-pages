@@ -1082,6 +1082,132 @@
       color: #ffffff;
     }
 
+    .code-walk {
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
+      gap: 16px;
+      max-width: 1120px;
+      margin: 0 auto;
+      align-items: stretch;
+    }
+
+    .code-walk.wide {
+      grid-template-columns: 1fr;
+    }
+
+    .walk-code {
+      margin: 0;
+      padding: 14px 0;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #05070a;
+      box-shadow: var(--shadow);
+      overflow: auto;
+      font-family: var(--mono);
+      font-size: 0.31em;
+      line-height: 1.17;
+    }
+
+    .walk-code code {
+      display: block;
+      white-space: normal !important;
+    }
+
+    .walk-code span {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 14px;
+      padding: 0 18px 0 0;
+      color: #f8fafc;
+      line-height: 1.17;
+    }
+
+    .walk-code span.mark {
+      background: rgba(94, 234, 212, 0.12);
+      color: #ffffff;
+    }
+
+    .walk-code b {
+      padding-right: 10px;
+      color: #94a3b8;
+      font-weight: 700;
+      text-align: right;
+      user-select: none;
+    }
+
+    .walk-code em {
+      color: #5eead4;
+      font-style: normal;
+    }
+
+    .walk-code i {
+      color: #7dd3fc;
+      font-style: normal;
+    }
+
+    .walk-code u {
+      color: #fde047;
+      text-decoration: none;
+    }
+
+    .walk-notes {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .walk-notes li {
+      padding: 13px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      border-radius: 8px;
+      background: #080808;
+      color: var(--text-soft);
+      font-size: 0.5em;
+      line-height: 1.42;
+    }
+
+    .walk-notes strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--green);
+      font-size: 0.96em;
+    }
+
+    .code-map {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .code-file {
+      min-height: 142px;
+      padding: 16px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #050505;
+      box-shadow: var(--shadow);
+    }
+
+    .code-file strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--blue);
+      font-family: var(--mono);
+      font-size: 0.52em;
+    }
+
+    .code-file span {
+      display: block;
+      color: var(--text-soft);
+      font-size: 0.48em;
+      line-height: 1.38;
+    }
+
     .reveal .controls {
       color: var(--green);
     }
@@ -1104,7 +1230,9 @@
       .code-layout,
       .compare,
       .simulator,
-      .sim-lane {
+      .sim-lane,
+      .code-walk,
+      .code-map {
         grid-template-columns: 1fr;
       }
 
@@ -1653,6 +1781,254 @@ public class NotificationConsumer {
             </div>
           </div>
 
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Actual Code Path</p>
+        <h2>실제로는 이 파일 순서대로 작성하면 됩니다</h2>
+        <div class="code-map">
+          <div class="code-file">
+            <strong>build.gradle</strong>
+            <span>Spring Kafka 의존성을 추가합니다. 애플리케이션이 Kafka Producer/Consumer API를 사용할 수 있게 됩니다.</span>
+          </div>
+          <div class="code-file">
+            <strong>application.yml</strong>
+            <span>broker 주소, serializer/deserializer, consumer group, offset commit 방식을 설정합니다.</span>
+          </div>
+          <div class="code-file">
+            <strong>OrderCreatedEvent.java</strong>
+            <span>Topic에 실어 보낼 메시지 계약입니다. Producer와 Consumer가 같은 모양을 공유합니다.</span>
+          </div>
+          <div class="code-file">
+            <strong>OrderEventProducer.java</strong>
+            <span>주문 생성 이벤트를 <code>order.created</code> Topic으로 발행합니다.</span>
+          </div>
+          <div class="code-file">
+            <strong>OrderService.java</strong>
+            <span>주문 저장 후 Producer를 호출합니다. 비즈니스 코드와 Kafka 발행 지점이 만나는 곳입니다.</span>
+          </div>
+          <div class="code-file">
+            <strong>NotificationConsumer.java</strong>
+            <span>Topic에서 이벤트를 읽고 알림을 보낸 뒤 offset을 commit합니다.</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Setup Code</p>
+        <h2>1. 의존성과 Kafka 연결 설정</h2>
+        <div class="code-walk">
+          <pre class="walk-code"><code><span class="mark"><b>1</b>plugins { id 'java' }</span>
+<span><b>2</b>plugins { id 'org.springframework.boot' version '3.3.0' }</span>
+<span><b>3</b></span>
+<span class="mark"><b>4</b>dependencies {</span>
+<span><b>5</b>  implementation 'org.springframework.boot:spring-boot-starter-web'</span>
+<span class="mark"><b>6</b>  implementation 'org.springframework.kafka:spring-kafka'</span>
+<span><b>7</b>  implementation 'org.springframework.boot:spring-boot-starter-validation'</span>
+<span><b>8</b>  testImplementation 'org.springframework.kafka:spring-kafka-test'</span>
+<span><b>9</b>}</span>
+<span><b>10</b></span>
+<span><b>11</b><em># application.yml</em></span>
+<span class="mark"><b>12</b>spring.kafka.bootstrap-servers: localhost:9092</span>
+<span><b>13</b>spring.kafka.producer.key-serializer: org.apache.kafka.common.serialization.StringSerializer</span>
+<span><b>14</b>spring.kafka.producer.value-serializer: org.springframework.kafka.support.serializer.JsonSerializer</span>
+<span><b>15</b>spring.kafka.consumer.group-id: notification-service</span>
+<span><b>16</b>spring.kafka.consumer.auto-offset-reset: earliest</span>
+<span><b>17</b>spring.kafka.consumer.key-deserializer: org.apache.kafka.common.serialization.StringDeserializer</span>
+<span><b>18</b>spring.kafka.consumer.value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer</span>
+<span class="mark"><b>19</b>spring.kafka.consumer.properties.spring.json.trusted.packages: com.example.kafka</span>
+<span class="mark"><b>20</b>spring.kafka.listener.ack-mode: manual</span></code></pre>
+          <ul class="walk-notes">
+            <li><strong>6번</strong> Spring Boot에서 KafkaTemplate과 @KafkaListener를 쓰기 위한 핵심 의존성입니다.</li>
+            <li><strong>12번</strong> 로컬 개발이면 보통 Docker Kafka의 9092 포트를 바라봅니다.</li>
+            <li><strong>14, 18번</strong> Java 객체를 JSON으로 보내고, Consumer에서 다시 객체로 받기 위한 설정입니다.</li>
+            <li><strong>19번</strong> JsonDeserializer가 역직렬화해도 되는 패키지를 제한합니다.</li>
+            <li><strong>20번</strong> Consumer가 처리를 끝낸 뒤 직접 offset commit을 호출하게 만듭니다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Message Contract</p>
+        <h2>2. Topic에 실어 보낼 Event DTO를 먼저 정합니다</h2>
+        <div class="code-walk">
+          <pre class="walk-code"><code><span><b>1</b>package com.example.kafka.order;</span>
+<span><b>2</b></span>
+<span><b>3</b>import java.time.Instant;</span>
+<span><b>4</b>import java.util.UUID;</span>
+<span><b>5</b></span>
+<span class="mark"><b>6</b>public record OrderCreatedEvent(</span>
+<span class="mark"><b>7</b>    String eventId,</span>
+<span><b>8</b>    String orderId,</span>
+<span><b>9</b>    String userId,</span>
+<span><b>10</b>    long amount,</span>
+<span><b>11</b>    Instant occurredAt</span>
+<span><b>12</b>) {</span>
+<span><b>13</b>  public static OrderCreatedEvent from(Order order) {</span>
+<span class="mark"><b>14</b>    return new OrderCreatedEvent(</span>
+<span><b>15</b>        UUID.randomUUID().toString(),</span>
+<span><b>16</b>        order.id(),</span>
+<span><b>17</b>        order.userId(),</span>
+<span><b>18</b>        order.amount(),</span>
+<span><b>19</b>        Instant.now()</span>
+<span><b>20</b>    );</span>
+<span><b>21</b>  }</span>
+<span><b>22</b>}</span>
+<span><b>23</b></span>
+<span><b>24</b>public final class KafkaTopics {</span>
+<span class="mark"><b>25</b>  public static final String ORDER_CREATED = "order.created";</span>
+<span><b>26</b>  private KafkaTopics() {}</span>
+<span><b>27</b>}</span></code></pre>
+          <ul class="walk-notes">
+            <li><strong>6번</strong> record를 쓰면 JSON으로 보낼 필드를 명확히 고정할 수 있습니다.</li>
+            <li><strong>7번</strong> eventId는 중복 처리 방지에 씁니다. Consumer가 같은 eventId를 이미 처리했는지 확인할 수 있습니다.</li>
+            <li><strong>8번</strong> orderId는 Kafka message key로 쓰기 좋습니다. 같은 주문 이벤트를 같은 partition으로 보내기 위함입니다.</li>
+            <li><strong>14번</strong> 도메인 객체 Order에서 이벤트 객체로 변환합니다. DB Entity를 그대로 메시지로 보내지 않습니다.</li>
+            <li><strong>25번</strong> Topic 이름은 상수화해서 Producer와 Consumer가 같은 문자열을 공유하게 합니다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Producer Code</p>
+        <h2>3. Producer는 Topic, key, event를 명확히 넣어 보냅니다</h2>
+        <div class="code-walk">
+          <pre class="walk-code"><code><span><b>1</b>@Slf4j</span>
+<span><b>2</b>@Component</span>
+<span><b>3</b>@RequiredArgsConstructor</span>
+<span><b>4</b>public class OrderEventProducer {</span>
+<span><b>5</b>  private final KafkaTemplate&lt;String, OrderCreatedEvent&gt; kafkaTemplate;</span>
+<span><b>6</b></span>
+<span class="mark"><b>7</b>  public void publishOrderCreated(Order order) {</span>
+<span><b>8</b>    OrderCreatedEvent event = OrderCreatedEvent.from(order);</span>
+<span><b>9</b>    String topic = KafkaTopics.ORDER_CREATED;</span>
+<span class="mark"><b>10</b>    String key = event.orderId();</span>
+<span><b>11</b></span>
+<span class="mark"><b>12</b>    kafkaTemplate.send(topic, key, event)</span>
+<span><b>13</b>        .whenComplete((result, ex) -&gt; {</span>
+<span><b>14</b>          if (ex != null) {</span>
+<span><b>15</b>            log.error("publish failed. topic={}, key={}", topic, key, ex);</span>
+<span><b>16</b>            return;</span>
+<span><b>17</b>          }</span>
+<span><b>18</b>          var meta = result.getRecordMetadata();</span>
+<span><b>19</b>          log.info("published. partition={}, offset={}", meta.partition(), meta.offset());</span>
+<span><b>20</b>        });</span>
+<span><b>21</b>  }</span>
+<span><b>22</b>}</span></code></pre>
+          <ul class="walk-notes">
+            <li><strong>5번</strong> key는 String, value는 OrderCreatedEvent인 KafkaTemplate을 주입받습니다.</li>
+            <li><strong>8번</strong> 비즈니스 객체를 이벤트 메시지로 변환합니다.</li>
+            <li><strong>10번</strong> key를 orderId로 잡으면 같은 주문 관련 이벤트가 같은 partition에 들어갈 가능성이 높아집니다.</li>
+            <li><strong>12번</strong> send(topic, key, value) 형태로 보냅니다. 성공/실패는 callback에서 확인합니다.</li>
+            <li><strong>18-19번</strong> 운영 로그에는 partition과 offset을 남기면 추적이 쉬워집니다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Service Code</p>
+        <h2>4. Service는 “DB 저장 후 이벤트 발행” 순서로 연결합니다</h2>
+        <div class="code-walk">
+          <pre class="walk-code"><code><span><b>1</b>package com.example.kafka.order;</span>
+<span><b>2</b></span>
+<span><b>3</b>import lombok.RequiredArgsConstructor;</span>
+<span><b>4</b>import org.springframework.stereotype.Service;</span>
+<span><b>5</b>import org.springframework.transaction.annotation.Transactional;</span>
+<span><b>6</b></span>
+<span><b>7</b>@Service</span>
+<span><b>8</b>@RequiredArgsConstructor</span>
+<span><b>9</b>public class OrderService {</span>
+<span><b>10</b>  private final OrderRepository orderRepository;</span>
+<span><b>11</b>  private final OrderEventProducer orderEventProducer;</span>
+<span><b>12</b></span>
+<span class="mark"><b>13</b>  @Transactional</span>
+<span><b>14</b>  public OrderResponse createOrder(CreateOrderRequest request) {</span>
+<span class="mark"><b>15</b>    Order order = Order.create(</span>
+<span><b>16</b>        request.userId(),</span>
+<span><b>17</b>        request.items(),</span>
+<span><b>18</b>        request.amount()</span>
+<span><b>19</b>    );</span>
+<span><b>20</b></span>
+<span class="mark"><b>21</b>    Order savedOrder = orderRepository.save(order);</span>
+<span class="mark"><b>22</b>    orderEventProducer.publishOrderCreated(savedOrder);</span>
+<span><b>23</b></span>
+<span><b>24</b>    return OrderResponse.from(savedOrder);</span>
+<span><b>25</b>  }</span>
+<span><b>26</b>}</span></code></pre>
+          <ul class="walk-notes">
+            <li><strong>13번</strong> 주문 저장은 트랜잭션 안에서 처리합니다.</li>
+            <li><strong>21번</strong> DB에 주문이 먼저 남아야 Consumer가 나중에 주문 상세를 조회할 수 있습니다.</li>
+            <li><strong>22번</strong> 저장된 주문 기준으로 이벤트를 발행합니다.</li>
+            <li><strong>중요</strong> 아주 엄격하게 하려면 21번과 22번 사이 실패를 막기 위해 Outbox 패턴을 씁니다. 입문 자료에서는 연결 지점을 먼저 이해하면 됩니다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Consumer Code</p>
+        <h2>5. Consumer는 처리 성공 후에만 offset을 commit합니다</h2>
+        <div class="code-walk">
+          <pre class="walk-code"><code><span><b>1</b>@Slf4j</span>
+<span><b>2</b>@Component</span>
+<span><b>3</b>@RequiredArgsConstructor</span>
+<span><b>4</b>public class NotificationConsumer {</span>
+<span><b>5</b>  private final ProcessedEventRepository processedEventRepository;</span>
+<span><b>6</b>  private final NotificationService notificationService;</span>
+<span><b>7</b></span>
+<span class="mark"><b>8</b>  @KafkaListener(topics = KafkaTopics.ORDER_CREATED, groupId = "notification-service")</span>
+<span class="mark"><b>9</b>  public void handle(OrderCreatedEvent event, Acknowledgment ack) {</span>
+<span><b>10</b>    log.info("consume. eventId={}, orderId={}", event.eventId(), event.orderId());</span>
+<span><b>11</b></span>
+<span class="mark"><b>12</b>    if (processedEventRepository.existsByEventId(event.eventId())) {</span>
+<span><b>13</b>      ack.acknowledge();</span>
+<span><b>14</b>      return;</span>
+<span><b>15</b>    }</span>
+<span><b>16</b></span>
+<span class="mark"><b>17</b>    notificationService.sendOrderCreatedMessage(event.userId(), event.orderId(), event.amount());</span>
+<span><b>18</b>    processedEventRepository.save(event.eventId());</span>
+<span class="mark"><b>19</b>    ack.acknowledge();</span>
+<span><b>20</b>  }</span>
+<span><b>21</b>}</span></code></pre>
+          <ul class="walk-notes">
+            <li><strong>8번</strong> 이 Consumer는 <code>order.created</code> Topic을 <code>notification-service</code> group으로 읽습니다.</li>
+            <li><strong>9번</strong> Acknowledgment는 수동 offset commit 핸들입니다.</li>
+            <li><strong>12-15번</strong> 같은 이벤트가 재전달될 수 있으므로 eventId로 중복 처리를 막습니다.</li>
+            <li><strong>17번</strong> Consumer는 자기 책임인 “알림 발송”만 처리합니다.</li>
+            <li><strong>19번</strong> 성공적으로 처리한 뒤 commit합니다. 실패하면 commit하지 않아 재처리될 수 있습니다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Consumer Code · Processing Part</p>
+        <h2>6. Consumer 처리부는 중복 방지 → 비즈니스 처리 → commit 순서입니다</h2>
+        <div class="code-walk">
+          <pre class="walk-code"><code><span><b>1</b>public void handle(OrderCreatedEvent event, Acknowledgment ack) {</span>
+<span><b>2</b>  log.info("consume. eventId={}, orderId={}",</span>
+<span><b>3</b>      event.eventId(), event.orderId());</span>
+<span><b>4</b></span>
+<span class="mark"><b>5</b>  if (processedEventRepository.existsByEventId(event.eventId())) {</span>
+<span class="mark"><b>6</b>    ack.acknowledge();</span>
+<span><b>7</b>    return;</span>
+<span><b>8</b>  }</span>
+<span><b>9</b></span>
+<span class="mark"><b>10</b>  notificationService.sendOrderCreatedMessage(</span>
+<span><b>11</b>      event.userId(),</span>
+<span><b>12</b>      event.orderId(),</span>
+<span><b>13</b>      event.amount()</span>
+<span><b>14</b>  );</span>
+<span><b>15</b></span>
+<span><b>16</b>  processedEventRepository.save(event.eventId());</span>
+<span class="mark"><b>17</b>  ack.acknowledge();</span>
+<span><b>18</b>}</span></code></pre>
+          <ul class="walk-notes">
+            <li><strong>5번</strong> Consumer는 같은 메시지를 두 번 받을 수 있다고 가정합니다. 그래서 eventId로 이미 처리했는지 먼저 봅니다.</li>
+            <li><strong>6번</strong> 이미 처리한 이벤트라면 비즈니스 로직을 다시 실행하지 않고 offset만 commit합니다.</li>
+            <li><strong>10-14번</strong> 실제 담당 업무인 알림 발송만 수행합니다. 결제나 분석 로직을 여기 넣지 않습니다.</li>
+            <li><strong>16번</strong> 처리 완료 eventId를 저장해 다음 중복 수신을 막습니다.</li>
+            <li><strong>17번</strong> 모든 처리가 끝난 뒤 commit합니다. 이 줄 전에 예외가 나면 commit하지 않아 재처리 여지가 남습니다.</li>
+          </ul>
         </div>
       </section>
     </div>
