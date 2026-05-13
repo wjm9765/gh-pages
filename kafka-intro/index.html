@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kafka 입문: 회사/프로젝트에서 쓰는 이벤트 스트리밍</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/simple.min.css" id="theme">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #000000;
+      --surface: #070707;
+      --surface-2: #101010;
+      --surface-3: #181818;
+      --line: rgba(255, 255, 255, 0.32);
+      --line-strong: rgba(255, 255, 255, 0.58);
+      --text: #ffffff;
+      --text-soft: #f1f5f9;
+      --muted: #d4d4d8;
+      --blue: #7dd3fc;
+      --blue-strong: #38bdf8;
+      --green: #5eead4;
+      --naver: #03c75a;
+      --orange: #fde047;
+      --red: #fda4af;
+      --purple: #c4b5fd;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.72);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body,
+    .reveal,
+    .reveal-viewport,
+    .reveal .slides,
+    .reveal .slides section,
+    .reveal .backgrounds,
+    .reveal .backgrounds .slide-background {
+      background: #000000 !important;
+    }
+
+    .reveal {
+      color: var(--text);
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 28px;
+    }
+
+    .reveal .slides {
+      text-align: left;
+    }
+
+    .reveal section {
+      padding: 0 18px;
+    }
+
+    .reveal h1,
+    .reveal h2,
+    .reveal h3,
+    .reveal h4 {
+      color: var(--text);
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 780;
+      letter-spacing: 0;
+      line-height: 1.12;
+      text-transform: none;
+    }
+
+    .reveal h1 {
+      max-width: 960px;
+      margin: 0 auto 20px;
+      font-size: 2.15em;
+      text-align: center;
+    }
+
+    .reveal h2 {
+      max-width: 1040px;
+      margin: 0 auto 26px;
+      font-size: 1.45em;
+    }
+
+    .reveal h3 {
+      margin: 0 0 12px;
+      font-size: 0.82em;
+    }
+
+    .reveal p,
+    .reveal li,
+    .reveal td {
+      color: var(--text-soft);
+      line-height: 1.48;
+    }
+
+    .reveal strong {
+      color: var(--text);
+      font-weight: 780;
+    }
+
+    .reveal code {
+      padding: 0.12em 0.34em;
+      border: 1px solid rgba(96, 165, 250, 0.24);
+      border-radius: 6px;
+      background: rgba(96, 165, 250, 0.09);
+      color: #dbeafe;
+      font-family: var(--mono);
+      font-size: 0.9em;
+      white-space: nowrap;
+    }
+
+    .eyebrow {
+      margin: 0 auto 12px;
+      color: var(--green);
+      font-size: 0.62em;
+      font-weight: 820;
+      letter-spacing: 0.06em;
+      text-align: center !important;
+      text-transform: uppercase;
+    }
+
+    .section-label {
+      max-width: 1040px;
+      margin: 0 auto 10px;
+      color: var(--green);
+      font-size: 0.58em;
+      font-weight: 820;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      max-width: 900px;
+      margin: 0 auto;
+      color: var(--muted) !important;
+      font-size: 0.84em;
+      text-align: center !important;
+    }
+
+    .hero-shell {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 42px 46px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(17, 24, 39, 0.92), rgba(8, 13, 23, 0.88)),
+        linear-gradient(90deg, rgba(96, 165, 250, 0.18), rgba(52, 211, 153, 0.12));
+      box-shadow: var(--shadow);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .hero-copy h1 {
+      margin: 0 0 16px;
+      text-align: left;
+    }
+
+    .hero-copy p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.78em;
+    }
+
+    .logo-mark {
+      display: grid;
+      gap: 12px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(8, 13, 23, 0.78);
+    }
+
+    .logo-row {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .logo-dot {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--green));
+      color: #031018;
+      font-size: 1em;
+      font-weight: 900;
+    }
+
+    .logo-row strong {
+      display: block;
+      font-size: 0.74em;
+    }
+
+    .logo-row span {
+      color: var(--muted);
+      font-size: 0.58em;
+    }
+
+    .signal-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .signal {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(21, 31, 49, 0.72);
+      text-align: center;
+    }
+
+    .signal strong {
+      display: block;
+      color: var(--blue-strong);
+      font-size: 0.76em;
+    }
+
+    .signal span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.46em;
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      max-width: 1040px;
+      margin: 0 auto;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card,
+    .mini-card,
+    .callout {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(21, 31, 49, 0.96), rgba(15, 23, 42, 0.96));
+      box-shadow: var(--shadow);
+    }
+
+    .card {
+      min-height: 210px;
+      padding: 22px;
+    }
+
+    .mini-card {
+      min-height: 145px;
+      padding: 18px;
+    }
+
+    .card h3,
+    .mini-card h3 {
+      color: var(--blue-strong);
+      font-size: 0.78em;
+    }
+
+    .card p,
+    .card li,
+    .mini-card p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.64em;
+      line-height: 1.45;
+    }
+
+    .card ul {
+      display: grid;
+      gap: 8px;
+      width: 100%;
+      margin: 0;
+      padding-left: 1.05em;
+    }
+
+    .callout {
+      max-width: 1040px;
+      margin: 22px auto 0;
+      padding: 18px 22px;
+      border-left: 5px solid var(--green);
+      color: var(--text-soft);
+      font-size: 0.68em;
+      line-height: 1.48;
+    }
+
+    .callout.warning {
+      border-left-color: var(--orange);
+    }
+
+    .callout.danger {
+      border-left-color: var(--red);
+    }
+
+    .full-flow {
+      display: grid;
+      grid-template-columns: 0.9fr 1fr 1.15fr 1.15fr;
+      gap: 14px;
+      max-width: 1080px;
+      margin: 0 auto;
+      align-items: stretch;
+    }
+
+    .flow-column {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .flow-title {
+      color: var(--muted);
+      font-size: 0.5em;
+      font-weight: 760;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .flow-box {
+      min-height: 82px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(21, 31, 49, 0.88);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.24);
+    }
+
+    .flow-box.primary {
+      border-color: rgba(96, 165, 250, 0.56);
+      background: linear-gradient(180deg, rgba(37, 99, 235, 0.22), rgba(21, 31, 49, 0.9));
+    }
+
+    .flow-box.kafka {
+      border-color: rgba(52, 211, 153, 0.58);
+      background: linear-gradient(180deg, rgba(3, 199, 90, 0.18), rgba(21, 31, 49, 0.94));
+    }
+
+    .flow-box strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.64em;
+    }
+
+    .flow-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.49em;
+      line-height: 1.32;
+    }
+
+    .flow-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 0.58em;
+      letter-spacing: 0;
+      opacity: 0.9;
+    }
+
+    .diagram-frame {
+      width: min(1080px, 96%);
+      margin: 0 auto;
+      padding: 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #050505;
+      box-shadow: var(--shadow);
+    }
+
+    .diagram-frame.compact {
+      width: min(1040px, 94%);
+    }
+
+    .diagram-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .diagram-svg .node {
+      fill: #0b0b0b;
+      stroke: rgba(255, 255, 255, 0.66);
+      stroke-width: 2;
+    }
+
+    .diagram-svg .node-blue {
+      fill: #06131f;
+      stroke: #7dd3fc;
+    }
+
+    .diagram-svg .node-green {
+      fill: #041713;
+      stroke: #5eead4;
+    }
+
+    .diagram-svg .node-yellow {
+      fill: #171204;
+      stroke: #fde047;
+    }
+
+    .diagram-svg .node-red {
+      fill: #1d070a;
+      stroke: #fda4af;
+    }
+
+    .diagram-svg .lane {
+      fill: #030303;
+      stroke: rgba(255, 255, 255, 0.28);
+      stroke-width: 1.4;
+      stroke-dasharray: 7 7;
+    }
+
+    .diagram-svg .arrow-line {
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 3;
+      marker-end: url(#arrow);
+    }
+
+    .diagram-svg .arrow-green {
+      fill: none;
+      stroke: #5eead4;
+      stroke-width: 3.2;
+      marker-end: url(#arrowGreen);
+    }
+
+    .diagram-svg .arrow-yellow {
+      fill: none;
+      stroke: #fde047;
+      stroke-width: 3;
+      marker-end: url(#arrowYellow);
+    }
+
+    .diagram-svg .title-text {
+      fill: #ffffff;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .diagram-svg .body-text {
+      fill: #f1f5f9;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .diagram-svg .muted-text {
+      fill: #d4d4d8;
+      font-size: 13px;
+      font-weight: 520;
+    }
+
+    .diagram-svg .label-text {
+      fill: #5eead4;
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+    }
+
+    .diagram-svg .small-text {
+      fill: #ffffff;
+      font-size: 12px;
+      font-family: var(--mono);
+      font-weight: 700;
+    }
+
+    .diagram-svg .chip {
+      fill: #111111;
+      stroke: rgba(255, 255, 255, 0.42);
+      stroke-width: 1;
+    }
+
+    .topic-rail {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .partition {
+      display: grid;
+      grid-template-columns: 32px repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      align-items: center;
+      padding: 8px;
+      border: 1px solid rgba(52, 211, 153, 0.24);
+      border-radius: 7px;
+      background: rgba(8, 13, 23, 0.54);
+    }
+
+    .partition-label,
+    .event-chip {
+      font-family: var(--mono);
+      font-size: 0.42em;
+      text-align: center;
+    }
+
+    .partition-label {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .event-chip {
+      padding: 5px 3px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-soft);
+    }
+
+    .sequence {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 1040px;
+      margin: 0 auto;
+      align-items: stretch;
+    }
+
+    .seq-step {
+      position: relative;
+      min-height: 160px;
+      padding: 18px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(21, 31, 49, 0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .seq-step::after {
+      content: "→";
+      position: absolute;
+      top: 50%;
+      right: -17px;
+      transform: translateY(-50%);
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .seq-step:last-child::after {
+      content: "";
+    }
+
+    .seq-step b {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      background: rgba(96, 165, 250, 0.15);
+      color: var(--blue-strong);
+      font-size: 0.56em;
+    }
+
+    .seq-step strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.6em;
+    }
+
+    .seq-step span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.48em;
+      line-height: 1.32;
+    }
+
+    .table {
+      width: min(1040px, 94%);
+      margin: 0 auto;
+      border-collapse: collapse;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: rgba(15, 23, 42, 0.92);
+      box-shadow: var(--shadow);
+      font-size: 0.58em;
+    }
+
+    .table th,
+    .table td {
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .table th {
+      background: rgba(30, 41, 59, 0.96);
+      color: var(--text);
+      font-weight: 780;
+    }
+
+    .table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid rgba(96, 165, 250, 0.24);
+      border-radius: 999px;
+      background: rgba(96, 165, 250, 0.11);
+      color: #dbeafe;
+      font-size: 0.9em;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .code-layout {
+      display: grid;
+      grid-template-columns: 0.88fr 1.12fr;
+      gap: 18px;
+      max-width: 1080px;
+      margin: 0 auto;
+      align-items: stretch;
+    }
+
+    .code-note {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .code-point {
+      padding: 15px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(21, 31, 49, 0.92);
+    }
+
+    .code-point strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--green);
+      font-size: 0.62em;
+    }
+
+    .code-point span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.5em;
+      line-height: 1.35;
+    }
+
+    pre.code {
+      width: 100%;
+      max-height: 500px;
+      margin: 0;
+      padding: 18px 20px;
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 8px;
+      background: #020617;
+      color: #dbeafe;
+      font-family: var(--mono);
+      font-size: 0.43em;
+      line-height: 1.45;
+      overflow: auto;
+      box-shadow: var(--shadow);
+      tab-size: 2;
+    }
+
+    pre.code code {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font-size: 1em;
+      white-space: pre;
+    }
+
+    .token-comment {
+      color: #94a3b8;
+    }
+
+    .token-key {
+      color: #93c5fd;
+    }
+
+    .token-string {
+      color: #86efac;
+    }
+
+    .token-warn {
+      color: #fbbf24;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: 1040px;
+      margin: 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .compare-panel {
+      padding: 24px;
+      background: rgba(15, 23, 42, 0.92);
+    }
+
+    .compare-panel:first-child {
+      border-right: 1px solid var(--line);
+    }
+
+    .compare-panel h3 {
+      color: var(--blue-strong);
+      font-size: 0.76em;
+    }
+
+    .compare-panel ul {
+      width: 100%;
+      margin: 14px 0 0;
+      padding-left: 1.05em;
+    }
+
+    .compare-panel li {
+      margin-bottom: 10px;
+      font-size: 0.58em;
+      line-height: 1.4;
+    }
+
+    .final {
+      display: grid;
+      gap: 22px;
+      max-width: 960px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .final h2 {
+      margin-bottom: 0;
+      text-align: center;
+    }
+
+    .final p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.78em;
+      text-align: center;
+    }
+
+    .key-line {
+      padding: 26px 30px;
+      border: 1px solid rgba(52, 211, 153, 0.42);
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(3, 199, 90, 0.2), rgba(96, 165, 250, 0.12));
+      color: var(--text) !important;
+      font-size: 0.88em;
+      font-weight: 760;
+      line-height: 1.46;
+      text-align: center !important;
+      box-shadow: var(--shadow);
+    }
+
+    .reveal .controls {
+      color: var(--green);
+    }
+
+    .reveal .progress {
+      color: var(--green);
+    }
+
+    @media (max-width: 900px) {
+      .reveal {
+        font-size: 23px;
+      }
+
+      .hero-grid,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .full-flow,
+      .sequence,
+      .code-layout,
+      .compare {
+        grid-template-columns: 1fr;
+      }
+
+      .seq-step::after {
+        content: "";
+      }
+
+      .compare-panel:first-child {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section>
+        <div class="hero-shell">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <p class="eyebrow">SW Maestro · Kafka 101</p>
+              <h1>Kafka 입문</h1>
+              <p>회사/프로젝트에서 이벤트 스트리밍을 어디에 쓰고, 어떤 코드와 구조로 연결하는지 15분 안에 이해하기</p>
+            </div>
+            <div class="logo-mark" aria-label="Kafka deck summary">
+              <div class="logo-row">
+                <div class="logo-dot">K</div>
+                <div>
+                  <strong>Event Streaming Backbone</strong>
+                  <span>동기 호출 사이에 이벤트 로그를 두는 백엔드 패턴</span>
+                </div>
+              </div>
+              <div class="signal-row">
+                <div class="signal"><strong>Async</strong><span>비동기 처리</span></div>
+                <div class="signal"><strong>Log</strong><span>남겨두고 읽기</span></div>
+                <div class="signal"><strong>Scale</strong><span>분산 처리</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Problem</p>
+        <h2>동기 API 호출만 이어 붙이면 장애와 지연이 그대로 전파됩니다</h2>
+        <div class="diagram-frame compact">
+          <svg class="diagram-svg" viewBox="0 0 1060 430" role="img" aria-label="동기 API 호출 장애 전파 다이어그램">
+            <defs>
+              <marker id="arrow" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto">
+                <path d="M0,0 L10,5.5 L0,11 Z" fill="#ffffff"></path>
+              </marker>
+              <marker id="arrowYellow" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto">
+                <path d="M0,0 L10,5.5 L0,11 Z" fill="#fde047"></path>
+              </marker>
+            </defs>
+
+            <rect x="22" y="42" width="180" height="126" rx="10" class="node node-blue"></rect>
+            <text x="112" y="85" text-anchor="middle" class="title-text">Web / App</text>
+            <text x="112" y="117" text-anchor="middle" class="body-text">POST /orders</text>
+            <text x="112" y="143" text-anchor="middle" class="muted-text">사용자 요청</text>
+
+            <path d="M212 105 H292" class="arrow-line"></path>
+
+            <rect x="306" y="42" width="184" height="126" rx="10" class="node node-blue"></rect>
+            <text x="398" y="85" text-anchor="middle" class="title-text">Order API</text>
+            <text x="398" y="117" text-anchor="middle" class="body-text">주문 저장</text>
+            <text x="398" y="143" text-anchor="middle" class="muted-text">뒤 서비스 직접 호출</text>
+
+            <path d="M500 105 H580" class="arrow-yellow"></path>
+
+            <rect x="594" y="24" width="190" height="92" rx="10" class="node node-red"></rect>
+            <text x="689" y="59" text-anchor="middle" class="title-text">Payment API</text>
+            <text x="689" y="87" text-anchor="middle" class="muted-text">느리면 주문도 대기</text>
+
+            <rect x="594" y="142" width="190" height="92" rx="10" class="node node-yellow"></rect>
+            <text x="689" y="177" text-anchor="middle" class="title-text">Notification</text>
+            <text x="689" y="205" text-anchor="middle" class="muted-text">문자/메일 발송</text>
+
+            <rect x="594" y="260" width="190" height="92" rx="10" class="node"></rect>
+            <text x="689" y="295" text-anchor="middle" class="title-text">Analytics</text>
+            <text x="689" y="323" text-anchor="middle" class="muted-text">로그/지표 반영</text>
+
+            <path d="M490 105 C535 105, 540 70, 580 70" class="arrow-yellow"></path>
+            <path d="M490 105 C535 105, 540 188, 580 188" class="arrow-yellow"></path>
+            <path d="M490 105 C535 105, 540 306, 580 306" class="arrow-yellow"></path>
+
+            <rect x="842" y="58" width="190" height="238" rx="10" class="node node-red"></rect>
+            <text x="937" y="102" text-anchor="middle" class="title-text">문제</text>
+            <text x="937" y="142" text-anchor="middle" class="body-text">느린 서비스가</text>
+            <text x="937" y="170" text-anchor="middle" class="body-text">앞 서비스를 막음</text>
+            <text x="937" y="214" text-anchor="middle" class="muted-text">장애 전파</text>
+            <text x="937" y="242" text-anchor="middle" class="muted-text">호출 관계 증가</text>
+            <text x="937" y="270" text-anchor="middle" class="muted-text">재처리 어려움</text>
+
+            <path d="M784 70 C810 70, 815 108, 832 122" class="arrow-yellow"></path>
+            <path d="M784 188 H832" class="arrow-yellow"></path>
+            <path d="M784 306 C810 306, 815 248, 832 234" class="arrow-yellow"></path>
+
+            <text x="532" y="390" text-anchor="middle" class="label-text">동기 체인: 새 기능이 붙을수록 API가 서로 기다리는 구조가 됨</text>
+          </svg>
+        </div>
+        <div class="callout warning">
+          Kafka는 이 문제를 “서비스가 서로 직접 기다리는 구조”에서 “이벤트를 남기고 각자 읽는 구조”로 바꿉니다.
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">One Sentence</p>
+        <h2>Kafka는 이벤트를 안전하게 쌓아두고 여러 서비스가 각자 읽게 하는 분산 로그입니다</h2>
+        <div class="grid-3">
+          <div class="mini-card">
+            <h3>Event</h3>
+            <p>“주문이 생성됐다”, “결제가 끝났다”처럼 이미 발생한 사실</p>
+          </div>
+          <div class="mini-card">
+            <h3>Log</h3>
+            <p>이벤트를 순서대로 저장하고, 읽은 위치를 Consumer가 관리</p>
+          </div>
+          <div class="mini-card">
+            <h3>Streaming</h3>
+            <p>이벤트가 계속 들어오고, 여러 서비스가 거의 실시간으로 처리</p>
+          </div>
+        </div>
+        <div class="callout">
+          큐처럼 “한 번 가져가면 사라지는 상자”라기보다, 여러 팀이 같은 기록을 자기 목적에 맞게 읽는 이벤트 장부에 가깝습니다.
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Full Architecture</p>
+        <h2>전체 흐름: 주문 API는 이벤트를 발행하고, 뒤쪽 서비스들이 독립적으로 처리합니다</h2>
+        <div class="diagram-frame">
+          <svg class="diagram-svg" viewBox="0 0 1160 570" role="img" aria-label="Kafka 전체 아키텍처 다이어그램">
+            <defs>
+              <marker id="arrowGreen" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto">
+                <path d="M0,0 L10,5.5 L0,11 Z" fill="#5eead4"></path>
+              </marker>
+              <marker id="arrowYellow" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto">
+                <path d="M0,0 L10,5.5 L0,11 Z" fill="#fde047"></path>
+              </marker>
+            </defs>
+
+            <rect x="24" y="46" width="182" height="420" rx="14" class="lane"></rect>
+            <text x="115" y="82" text-anchor="middle" class="label-text">CLIENT</text>
+            <rect x="52" y="128" width="126" height="80" rx="10" class="node node-blue"></rect>
+            <text x="115" y="162" text-anchor="middle" class="title-text">Web / App</text>
+            <text x="115" y="190" text-anchor="middle" class="muted-text">POST /orders</text>
+            <rect x="52" y="282" width="126" height="80" rx="10" class="node"></rect>
+            <text x="115" y="316" text-anchor="middle" class="title-text">Gateway</text>
+            <text x="115" y="344" text-anchor="middle" class="muted-text">auth / route</text>
+
+            <rect x="252" y="46" width="244" height="420" rx="14" class="lane"></rect>
+            <text x="374" y="82" text-anchor="middle" class="label-text">COMMAND SIDE</text>
+            <rect x="286" y="120" width="176" height="86" rx="10" class="node node-blue"></rect>
+            <text x="374" y="154" text-anchor="middle" class="title-text">Order Service</text>
+            <text x="374" y="182" text-anchor="middle" class="muted-text">주문 검증 / 저장</text>
+            <rect x="286" y="270" width="176" height="74" rx="10" class="node"></rect>
+            <text x="374" y="300" text-anchor="middle" class="title-text">Order DB</text>
+            <text x="374" y="326" text-anchor="middle" class="muted-text">transaction commit</text>
+            <rect x="286" y="374" width="176" height="74" rx="10" class="node node-green"></rect>
+            <text x="374" y="404" text-anchor="middle" class="title-text">Producer</text>
+            <text x="374" y="430" text-anchor="middle" class="muted-text">event publish</text>
+
+            <rect x="546" y="46" width="306" height="420" rx="14" class="lane"></rect>
+            <text x="699" y="82" text-anchor="middle" class="label-text">KAFKA CLUSTER</text>
+            <rect x="580" y="116" width="238" height="236" rx="12" class="node node-green"></rect>
+            <text x="699" y="152" text-anchor="middle" class="title-text">Topic: order.created</text>
+            <text x="699" y="180" text-anchor="middle" class="muted-text">key = orderId, value = JSON</text>
+
+            <rect x="608" y="210" width="184" height="34" rx="7" class="chip"></rect>
+            <text x="630" y="232" class="small-text">P0</text>
+            <text x="674" y="232" class="small-text">101</text>
+            <text x="720" y="232" class="small-text">104</text>
+            <text x="766" y="232" class="small-text">107</text>
+            <rect x="608" y="256" width="184" height="34" rx="7" class="chip"></rect>
+            <text x="630" y="278" class="small-text">P1</text>
+            <text x="674" y="278" class="small-text">102</text>
+            <text x="720" y="278" class="small-text">105</text>
+            <text x="766" y="278" class="small-text">108</text>
+            <rect x="608" y="302" width="184" height="34" rx="7" class="chip"></rect>
+            <text x="630" y="324" class="small-text">P2</text>
+            <text x="674" y="324" class="small-text">103</text>
+            <text x="720" y="324" class="small-text">106</text>
+            <text x="766" y="324" class="small-text">109</text>
+
+            <rect x="580" y="382" width="238" height="58" rx="10" class="node"></rect>
+            <text x="699" y="416" text-anchor="middle" class="title-text">Offset</text>
+            <text x="699" y="436" text-anchor="middle" class="muted-text">Consumer Group별 읽은 위치</text>
+
+            <rect x="902" y="46" width="234" height="420" rx="14" class="lane"></rect>
+            <text x="1019" y="82" text-anchor="middle" class="label-text">CONSUMERS</text>
+            <rect x="936" y="118" width="166" height="72" rx="10" class="node node-yellow"></rect>
+            <text x="1019" y="148" text-anchor="middle" class="title-text">Payment</text>
+            <text x="1019" y="174" text-anchor="middle" class="muted-text">결제 승인</text>
+            <rect x="936" y="236" width="166" height="72" rx="10" class="node node-blue"></rect>
+            <text x="1019" y="266" text-anchor="middle" class="title-text">Notification</text>
+            <text x="1019" y="292" text-anchor="middle" class="muted-text">메일 / 푸시</text>
+            <rect x="936" y="354" width="166" height="72" rx="10" class="node"></rect>
+            <text x="1019" y="384" text-anchor="middle" class="title-text">Analytics</text>
+            <text x="1019" y="410" text-anchor="middle" class="muted-text">지표 / 색인</text>
+
+            <path d="M178 168 H286" class="arrow-green"></path>
+            <path d="M178 322 H286" class="arrow-green"></path>
+            <path d="M374 206 V270" class="arrow-green"></path>
+            <path d="M374 344 V374" class="arrow-green"></path>
+            <path d="M462 411 H580" class="arrow-green"></path>
+            <path d="M818 154 H936" class="arrow-yellow"></path>
+            <path d="M818 272 H936" class="arrow-yellow"></path>
+            <path d="M818 390 H936" class="arrow-yellow"></path>
+
+            <text x="526" y="504" text-anchor="middle" class="body-text">주문 API는 이벤트만 발행</text>
+            <path d="M625 500 H742" class="arrow-green"></path>
+            <text x="910" y="504" text-anchor="middle" class="body-text">각 서비스는 자기 속도로 독립 처리</text>
+            <text x="580" y="542" text-anchor="middle" class="label-text">Kafka가 서비스 사이 직접 의존을 끊고, 이벤트 로그를 중심에 둠</text>
+          </svg>
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Core Vocabulary</p>
+        <h2>Kafka 회의에서 가장 많이 듣는 단어</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>용어</th>
+              <th>역할</th>
+              <th>실무 감각</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tag">Producer</span></td>
+              <td>이벤트를 Kafka에 쓰는 애플리케이션</td>
+              <td>Order Service가 <code>order.created</code>를 발행</td>
+            </tr>
+            <tr>
+              <td><span class="tag">Topic</span></td>
+              <td>같은 종류의 이벤트가 모이는 이름</td>
+              <td><code>payment.completed</code>, <code>user.signed_up</code></td>
+            </tr>
+            <tr>
+              <td><span class="tag">Partition</span></td>
+              <td>Topic 안에서 병렬 처리되는 로그 줄</td>
+              <td>같은 key는 같은 Partition으로 가서 순서가 유지됨</td>
+            </tr>
+            <tr>
+              <td><span class="tag">Broker</span></td>
+              <td>Kafka 서버 한 대</td>
+              <td>여러 Broker가 Cluster를 구성하고 데이터를 복제</td>
+            </tr>
+            <tr>
+              <td><span class="tag">Consumer Group</span></td>
+              <td>같은 목적의 Consumer 묶음</td>
+              <td>알림 Consumer 3대가 이벤트를 나눠 처리</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <p class="section-label">Message Contract</p>
+        <h2>실무에서는 먼저 “이벤트 메시지 모양”을 약속합니다</h2>
+        <div class="code-layout">
+          <div class="code-note">
+            <div class="code-point">
+              <strong>이벤트 이름</strong>
+              <span>Topic 이름은 보통 과거형 사건으로 정합니다. 예: <code>order.created</code></span>
+            </div>
+            <div class="code-point">
+              <strong>Key</strong>
+              <span>순서가 중요한 기준입니다. 주문 이벤트라면 보통 <code>orderId</code>가 key 후보입니다.</span>
+            </div>
+            <div class="code-point">
+              <strong>Payload</strong>
+              <span>Consumer가 필요한 최소 데이터만 넣고, 큰 상세 조회는 API/DB로 분리합니다.</span>
+            </div>
+          </div>
+          <pre class="code"><code>{
+  <span class="token-key">"eventId"</span>: <span class="token-string">"evt-20260513-0001"</span>,
+  <span class="token-key">"eventType"</span>: <span class="token-string">"order.created"</span>,
+  <span class="token-key">"occurredAt"</span>: <span class="token-string">"2026-05-13T20:45:00+09:00"</span>,
+  <span class="token-key">"orderId"</span>: <span class="token-string">"ORD-10043"</span>,
+  <span class="token-key">"userId"</span>: <span class="token-string">"USR-7781"</span>,
+  <span class="token-key">"amount"</span>: 59000,
+  <span class="token-key">"currency"</span>: <span class="token-string">"KRW"</span>,
+  <span class="token-key">"items"</span>: [
+    { <span class="token-key">"sku"</span>: <span class="token-string">"BOOK-KAFKA-01"</span>, <span class="token-key">"quantity"</span>: 1 }
+  ]
+}</code></pre>
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Producer Code</p>
+        <h2>Producer: 주문 저장 후 Kafka에 이벤트를 발행합니다</h2>
+        <div class="code-layout">
+          <div class="code-note">
+            <div class="code-point">
+              <strong>핵심 흐름</strong>
+              <span>주문을 DB에 저장한 뒤, 같은 주문 ID를 key로 이벤트를 보냅니다.</span>
+            </div>
+            <div class="code-point">
+              <strong>key = orderId</strong>
+              <span>같은 주문의 변경 이벤트가 같은 Partition에 들어가 순서가 유지됩니다.</span>
+            </div>
+            <div class="code-point">
+              <strong>주의</strong>
+              <span>실제 서비스에서는 DB 저장과 이벤트 발행 사이 실패를 막기 위해 Outbox 패턴을 자주 검토합니다.</span>
+            </div>
+          </div>
+          <pre class="code"><code><span class="token-comment">// Spring Boot + Spring Kafka 예시</span>
+@Service
+public class OrderService {
+  private final OrderRepository orderRepository;
+  private final KafkaTemplate&lt;String, OrderCreatedEvent&gt; kafkaTemplate;
+
+  public OrderResponse createOrder(CreateOrderRequest request) {
+    Order order = orderRepository.save(Order.from(request));
+
+    OrderCreatedEvent event = new OrderCreatedEvent(
+        UUID.randomUUID().toString(),
+        order.getId(),
+        order.getUserId(),
+        order.getAmount(),
+        order.getCreatedAt()
+    );
+
+    kafkaTemplate.send(
+        <span class="token-string">"order.created"</span>,
+        order.getId(),   <span class="token-comment">// partition key</span>
+        event
+    );
+
+    return OrderResponse.from(order);
+  }
+}</code></pre>
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Consumer Code</p>
+        <h2>Consumer: 이벤트를 읽고 자기 책임만 처리합니다</h2>
+        <div class="code-layout">
+          <div class="code-note">
+            <div class="code-point">
+              <strong>groupId</strong>
+              <span>같은 group 안에서는 이벤트를 나눠 읽고, 다른 group은 같은 이벤트를 독립적으로 읽습니다.</span>
+            </div>
+            <div class="code-point">
+              <strong>중복 처리 대비</strong>
+              <span>Kafka Consumer는 재시도 때문에 같은 이벤트를 다시 받을 수 있다고 생각해야 합니다.</span>
+            </div>
+            <div class="code-point">
+              <strong>실무 포인트</strong>
+              <span>결제/알림/분석은 각각 별도 Consumer Group으로 두면 서로의 장애가 덜 전파됩니다.</span>
+            </div>
+          </div>
+          <pre class="code"><code>@Component
+public class NotificationConsumer {
+  private final ProcessedEventRepository processedEvents;
+  private final NotificationService notificationService;
+
+  @KafkaListener(
+      topics = <span class="token-string">"order.created"</span>,
+      groupId = <span class="token-string">"notification-service"</span>
+  )
+  public void handle(OrderCreatedEvent event) {
+    if (processedEvents.existsById(event.eventId())) {
+      return; <span class="token-comment">// duplicate message guard</span>
+    }
+
+    notificationService.sendOrderCreatedMessage(
+        event.userId(),
+        event.orderId(),
+        event.amount()
+    );
+
+    processedEvents.save(event.eventId());
+  }
+}</code></pre>
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Consumer Group</p>
+        <h2>Consumer Group은 “같은 일을 나눠 하는 팀”입니다</h2>
+        <div class="diagram-frame compact">
+          <svg class="diagram-svg" viewBox="0 0 1060 470" role="img" aria-label="Consumer Group과 Partition 분담 처리 다이어그램">
+            <defs>
+              <marker id="arrowGreen" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto">
+                <path d="M0,0 L10,5.5 L0,11 Z" fill="#5eead4"></path>
+              </marker>
+              <marker id="arrowYellow" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto">
+                <path d="M0,0 L10,5.5 L0,11 Z" fill="#fde047"></path>
+              </marker>
+            </defs>
+
+            <rect x="34" y="68" width="300" height="290" rx="14" class="node node-green"></rect>
+            <text x="184" y="106" text-anchor="middle" class="title-text">Topic: order.created</text>
+            <text x="184" y="134" text-anchor="middle" class="muted-text">3 partitions</text>
+            <rect x="74" y="170" width="220" height="44" rx="8" class="chip"></rect>
+            <text x="112" y="198" class="small-text">P0</text>
+            <text x="168" y="198" class="small-text">101</text>
+            <text x="222" y="198" class="small-text">104</text>
+            <text x="268" y="198" class="small-text">107</text>
+            <rect x="74" y="230" width="220" height="44" rx="8" class="chip"></rect>
+            <text x="112" y="258" class="small-text">P1</text>
+            <text x="168" y="258" class="small-text">102</text>
+            <text x="222" y="258" class="small-text">105</text>
+            <text x="268" y="258" class="small-text">108</text>
+            <rect x="74" y="290" width="220" height="44" rx="8" class="chip"></rect>
+            <text x="112" y="318" class="small-text">P2</text>
+            <text x="168" y="318" class="small-text">103</text>
+            <text x="222" y="318" class="small-text">106</text>
+            <text x="268" y="318" class="small-text">109</text>
+
+            <rect x="430" y="56" width="272" height="318" rx="14" class="lane"></rect>
+            <text x="566" y="96" text-anchor="middle" class="label-text">GROUP A: notification-service</text>
+            <rect x="464" y="130" width="204" height="62" rx="10" class="node node-blue"></rect>
+            <text x="566" y="166" text-anchor="middle" class="title-text">notification-1</text>
+            <rect x="464" y="218" width="204" height="62" rx="10" class="node node-blue"></rect>
+            <text x="566" y="254" text-anchor="middle" class="title-text">notification-2</text>
+            <rect x="464" y="306" width="204" height="62" rx="10" class="node node-blue"></rect>
+            <text x="566" y="342" text-anchor="middle" class="title-text">notification-3</text>
+
+            <path d="M294 192 H464" class="arrow-green"></path>
+            <path d="M294 252 H464" class="arrow-green"></path>
+            <path d="M294 312 H464" class="arrow-green"></path>
+            <text x="380" y="178" text-anchor="middle" class="muted-text">분담</text>
+
+            <rect x="792" y="108" width="226" height="222" rx="14" class="lane"></rect>
+            <text x="905" y="148" text-anchor="middle" class="label-text">GROUP B: analytics-service</text>
+            <rect x="830" y="196" width="150" height="70" rx="10" class="node node-yellow"></rect>
+            <text x="905" y="226" text-anchor="middle" class="title-text">analytics-1</text>
+            <text x="905" y="252" text-anchor="middle" class="muted-text">같은 Topic 독립 구독</text>
+
+            <path d="M334 214 C520 416, 760 360, 830 266" class="arrow-yellow"></path>
+            <text x="646" y="424" text-anchor="middle" class="body-text">다른 Consumer Group은 같은 이벤트를 별도로 읽음</text>
+            <text x="530" y="450" text-anchor="middle" class="label-text">Group마다 offset이 따로 있으므로 알림 장애가 분석 처리 위치를 망치지 않음</text>
+          </svg>
+        </div>
+        <div class="callout">
+          Kafka를 처음 볼 때 가장 중요한 감각은 “Topic은 하나인데, Consumer Group마다 읽은 위치가 따로 있다”는 점입니다.
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">When To Use</p>
+        <h2>Kafka가 필요한 상황과 과한 상황을 구분해야 합니다</h2>
+        <div class="compare">
+          <div class="compare-panel">
+            <h3>Kafka가 잘 맞는 경우</h3>
+            <ul>
+              <li>주문, 결제, 알림, 분석처럼 여러 서비스가 같은 사건을 각자 처리한다.</li>
+              <li>트래픽이 몰려도 이벤트를 쌓아두고 Consumer가 자기 속도로 처리해야 한다.</li>
+              <li>로그, 검색 색인, 추천 피처, 감사 이력처럼 이벤트 기록이 중요하다.</li>
+              <li>나중에 새 Consumer를 붙여 기존 이벤트 흐름을 재사용할 가능성이 높다.</li>
+            </ul>
+          </div>
+          <div class="compare-panel">
+            <h3>Kafka가 과한 경우</h3>
+            <ul>
+              <li>요청 즉시 결과를 받아야 하는 단순 조회 API다.</li>
+              <li>서비스가 하나뿐이고 이벤트를 읽을 다른 주체가 없다.</li>
+              <li>운영 모니터링, 재처리, 메시지 중복 처리까지 감당할 준비가 없다.</li>
+              <li>단순 백그라운드 작업 큐 하나면 충분한 작은 프로젝트다.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="section-label">Checklist</p>
+        <h2>처음 설계 회의에 들어가면 이 네 가지를 물어보면 됩니다</h2>
+        <div class="grid-4">
+          <div class="mini-card">
+            <h3>1. 이벤트 이름</h3>
+            <p><code>order.created</code>처럼 사건을 과거형으로 정의했는가?</p>
+          </div>
+          <div class="mini-card">
+            <h3>2. 메시지 필드</h3>
+            <p>Consumer가 필요한 최소 데이터와 버전 관리 기준이 있는가?</p>
+          </div>
+          <div class="mini-card">
+            <h3>3. Partition Key</h3>
+            <p>순서를 지켜야 하는 기준이 주문 ID인지 사용자 ID인지 정했는가?</p>
+          </div>
+          <div class="mini-card">
+            <h3>4. 실패 처리</h3>
+            <p>중복, 재시도, DLQ, 알림 실패를 어떻게 다룰지 정했는가?</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="final">
+          <p class="eyebrow">Takeaway</p>
+          <h2>Kafka는 “서비스 사이의 실시간 이벤트 장부”입니다</h2>
+          <p class="key-line">Producer는 사건을 기록하고, Kafka는 순서 있는 로그로 보관하고, Consumer Group은 각자 목적에 맞게 같은 기록을 읽습니다.</p>
+          <p>처음에는 전체 구조, 메시지 모양, Producer/Consumer 코드, Consumer Group 개념만 정확히 잡으면 됩니다.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      controls: true,
+      progress: true,
+      center: true,
+      transition: "slide"
+    });
+  </script>
+</body>
+</html>
