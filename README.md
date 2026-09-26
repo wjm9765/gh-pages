@@ -7,6 +7,7 @@ Static pages and presentation materials for sharing study notes, seminar slides,
 - [Home](https://wjm9765.github.io/gh-pages/index.html)
 - [ASW 4.29 AI Common Language](https://wjm9765.github.io/gh-pages/ASW/4_29.html)
 - [Audio Safety in Large Audio-Language Models](https://wjm9765.github.io/gh-pages/AudioSafety/Audio%20Safety%20in%20Large%20Audio-Language%20Models.pdf)
+- [새싹반-ML 피드백1](https://wjm9765.github.io/gh-pages/saessak/ml-feedback1/)
 - [Saessak 4.5 Feedback](https://wjm9765.github.io/gh-pages/saessak/ch5-feedback/)
 - [Saessak 4.11 Feedback](https://wjm9765.github.io/gh-pages/saessak/ch6-feedback/)
 - [Saessak 5.2 Feedback](https://wjm9765.github.io/gh-pages/saessak/ch8-feedback/)
